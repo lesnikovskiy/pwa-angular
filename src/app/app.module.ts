@@ -19,6 +19,8 @@ import { AppComponent } from './app.component';
 import 'hammerjs';
 import { ListComponent } from './list/list.component';
 import { CoffeeComponent } from './coffee/coffee.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -41,7 +43,13 @@ import { CoffeeComponent } from './coffee/coffee.component';
     MatToolbarModule,
     MatCardModule,
     MatSlideToggleModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]
