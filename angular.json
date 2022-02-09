@@ -28,7 +28,6 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/assets",
-              "src/icons",
               "src/manifest.json"
             ],
             "styles": [
