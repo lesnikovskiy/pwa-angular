@@ -12,6 +12,10 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.updateNetworkStatusUI();
+    window.addEventListener('online', this.updateNetworkStatusUI);
+    window.addEventListener('offline', this.updateNetworkStatusUI);
+
     if ((navigator as any).standalone === false) {
       // This is an iOS device and we are in the browser
       this.showInstallPrompt();
@@ -36,6 +40,15 @@ export class AppComponent implements OnInit {
           return false;
         });
       }
+    }
+  }
+
+  private updateNetworkStatusUI() {
+    if (navigator.onLine) {
+      (document.querySelector('body') as any).style = '';
+    } else {
+      // 100% sure you're offline
+      (document.querySelector('body') as any).style = 'filter: grayscale(1)';
     }
   }
 

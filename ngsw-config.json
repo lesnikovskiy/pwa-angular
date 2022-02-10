@@ -32,14 +32,15 @@
   ],
   "dataGroups": [
     {
-      "name": "api-performance",
+      "name": "api",
       "urls": [
         "http://localhost:3000/**"
       ],
       "cacheConfig": {
-        "strategy": "performance",
-        "maxAge": "3d2h",
-        "maxSize": 100
+        "strategy": "freshness",
+        "maxAge": "1d",
+        "maxSize": 100,
+        "timeout": "3s"
       }
     }
   ]
