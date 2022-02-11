@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SwPush, SwUpdate, UnrecoverableStateEvent } from '@angular/service-worker';
 
 @Component({
   selector: 'app-root',
@@ -8,14 +9,34 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class AppComponent implements OnInit {
   constructor(
+    private readonly swPush: SwPush,
+    private readonly swUpdate: SwUpdate,
     private readonly snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
+    // Checking SW Update Status
+    this.swUpdate.checkForUpdate().then((isAvailable: boolean) => {
+      if (isAvailable) {
+        console.log(`Update available`);
+        const sb = this.snackBar.open('There is an update available', 'Install', { duration: 4000 });
+        sb.onAction().subscribe(() => {
+          console.log('Update installed');
+          this.swUpdate.activateUpdate().then(() => document.location.reload());
+        });
+      }
+    });
+
+    this.swUpdate.unrecoverable.subscribe((event: UnrecoverableStateEvent) => {
+      this.snackBar.open(`An error occurred that we cannot recover from: ${event.reason}. Please reload page.`, '', { duration: 3000 });
+    });
+
+    // Checking Network Status
     this.updateNetworkStatusUI();
     window.addEventListener('online', this.updateNetworkStatusUI);
     window.addEventListener('offline', this.updateNetworkStatusUI);
 
+    // Checking Installation Status
     if ((navigator as any).standalone === false) {
       // This is an iOS device and we are in the browser
       this.showInstallPrompt();
@@ -41,6 +62,16 @@ export class AppComponent implements OnInit {
         });
       }
     }
+  }
+
+  subscribeToPush() {
+    Notification.requestPermission((permission: NotificationPermission) => {
+      if (permission === 'granted') {
+        this.swPush.requestSubscription({ serverPublicKey: '' }).then(() => {
+          console.log('Registered');
+        });
+      }
+    });
   }
 
   private updateNetworkStatusUI() {

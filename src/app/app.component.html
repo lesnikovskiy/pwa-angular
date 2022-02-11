@@ -1,5 +1,8 @@
 <mat-toolbar color="primary">
   <h1>My Coffee App</h1>
+  <a (click)="subscribeToPush()" mat-button aria-label="Message" role="button">
+    <mat-icon aria-hidden="true">message</mat-icon>
+  </a>
 </mat-toolbar>
 
 <router-outlet></router-outlet>
